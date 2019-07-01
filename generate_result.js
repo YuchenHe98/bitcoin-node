@@ -10,31 +10,41 @@ function callback(key) {
 }
 
 class App extends React.Component {
-  
     constructor(props) {
         super(props);
         var data = require('./data.json');
         this.state = {
-            coinType: '',
+            columnName: '',
+            query: '',
             totalAmount: 0,
             numAmount: 0,
         }
-    this.handleQuery = this.handleQuery.bind(this);
+        this.handleQuery = this.handleQuery.bind(this);
+        this.chooseColumn = this.chooseColumn.bind(this);
+      
     }
-  
+
+    chooseColumn(event) {
+        var columnName = event.target.value;
+        this.setState({
+            columnName: columnName
+        });
+    }
+
     handleQuery(event) {
-    const data = require('./data.json');
+        const data = require('./data.json');
         var totalAmount = 0;
         var numAmount = 0;
-    var coinType = event.target.value;
+        var query = event.target.value;
         for (var i = 0; i < data.length; i++) {
-            if (coinType === '' || data[i].unit_coin === coinType) {
+            if (this.state.columnName === '' || query === '' || data[i][this.state.columnName] === query) {
                 totalAmount += data[i].amount;
                 numAmount += 1;
             }
         }
+
         this.setState({
-            coinType: coinType,
+            query: query,
             totalAmount: totalAmount,
             numAmount: numAmount,
         });
@@ -44,25 +54,26 @@ class App extends React.Component {
         return (
     <div className="App">
         <header className="App-header">
-          <div className="example-input">
-          
-            <Input placeholder="coin type" value={this.state.coinType} onChange={this.handleQuery}/>
-            <Input placeholder="default size" />
-           </div>
+        <div className="example-input">
+            <Input placeholder="key type" value={this.state.columnName} onChange={this.chooseColumn}/>
+            <Input placeholder="coin type" value={this.state.query} onChange={this.handleQuery}/>
+        </div>
 
         <p>
-          Coin type being queried is {this.state.coinType}!
+            Column {this.state.columnName} is queried, and the query is {this.state.query}!
         </p>
 
-              <Tabs defaultActiveKey="1" onChange={callback}>
-    <TabPane tab="Num Trades" key="1">
-      {this.state.numAmount}
-    </TabPane>
+        <Tabs defaultActiveKey="1" onChange={callback}>
+            <TabPane tab="Num Trades" key="1">
+                {this.state.numAmount}
+            </TabPane>
 
-    <TabPane tab="Total Amount" key="2">
-        {this.state.totalAmount}
-    </TabPane>
-  </Tabs>        
+            <TabPane tab="Total Amount" key="2">
+                {this.state.totalAmount}
+            </TabPane>
+          
+        </Tabs>
+
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -71,7 +82,7 @@ class App extends React.Component {
         >
           Learn React
         </a>
-      </header>
+        </header>
     </div>
         );
     }
