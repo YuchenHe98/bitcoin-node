@@ -9,44 +9,60 @@ function callback(key) {
   console.log(key);
 }
 
-function App() {
-    var data = require('./data.json')
-    var totalAmount = 0;
-    var numAmount = 0;
-    var rawInput = prompt("Please enter the coin being queried:", "eg: USD");
-
-        var coinType = rawInput.toUpperCase();
-        for (var i = 0; i < data.length; i++) {
-        if (coinType === '' || data[i].unit_coin === coinType) {
-                totalAmount += data[i].amount;
-                                        numAmount += 1;
-                }
+class App extends React.Component {
+  
+    constructor(props) {
+        super(props);
+        var data = require('./data.json');
+        this.state = {
+            coinType: '',
+            totalAmount: 0,
+            numAmount: 0,
+        }
+    this.handleQuery = this.handleQuery.bind(this);
     }
-    //alert(numAmount+" sum: "+totalAmount+"\n");
+  
+    handleQuery(event) {
+    const data = require('./data.json');
+        var totalAmount = 0;
+        var numAmount = 0;
+    var coinType = event.target.value;
+        for (var i = 0; i < data.length; i++) {
+            if (coinType === '' || data[i].unit_coin === coinType) {
+                totalAmount += data[i].amount;
+                numAmount += 1;
+            }
+        }
+        this.setState({
+            coinType: coinType,
+            totalAmount: totalAmount,
+            numAmount: numAmount,
+        });
+    }
 
-    return (
+    render() {
+        return (
     <div className="App">
         <header className="App-header">
           <div className="example-input">
-    <Input placeholder="large size" />
-    <Input placeholder="default size" />
-    <Input placeholder="small size" />
-  </div>
+          
+            <Input placeholder="coin type" value={this.state.coinType} onChange={this.handleQuery}/>
+            <Input placeholder="default size" />
+           </div>
 
         <p>
-          Coin type being queried is {coinType}!
+          Coin type being queried is {this.state.coinType}!
         </p>
 
               <Tabs defaultActiveKey="1" onChange={callback}>
     <TabPane tab="Num Trades" key="1">
-      {numAmount}
+      {this.state.numAmount}
     </TabPane>
-    
-    <TabPane tab="Total Amount" key="2">
-        {totalAmount}
-    </TabPane>
-  </Tabs>
 
+    <TabPane tab="Total Amount" key="2">
+        {this.state.totalAmount}
+    </TabPane>
+  </Tabs>        
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -57,7 +73,8 @@ function App() {
         </a>
       </header>
     </div>
-    );
+        );
+    }
 }
 
 export default App;
